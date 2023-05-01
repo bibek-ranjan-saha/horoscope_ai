@@ -7,17 +7,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:horoscope_ai/package/routes/app_router.dart';
+import 'package:horoscope_ai/package/storage/app_sp.dart';
 import 'package:horoscope_ai/presentation/bloc/horoscope_bloc/horoscope_cubit.dart';
 import 'package:horoscope_ai/presentation/bloc/periods_bloc/periods_cubit.dart';
 import 'package:horoscope_ai/presentation/bloc/signs_bloc/signs_cubit.dart';
 import 'package:horoscope_ai/presentation/bloc/types_bloc/types_cubit.dart';
+import 'package:horoscope_ai/presentation/bloc/user_bloc/user_cubit.dart';
 
 import 'package/localization/app_localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  var env = DotEnv(includePlatformEnvironment: true)..load();
+  DotEnv(includePlatformEnvironment: true).load();
+  AppSharedPref.initialize();
   if (kDebugMode) {
     handleErrors();
   }
@@ -74,6 +77,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<TypesCubit>(
           create: (BuildContext context) => TypesCubit(),
+        ),
+        BlocProvider<UserCubit>(
+          create: (BuildContext context) => UserCubit(),
         ),
       ],
       child: MaterialApp.router(

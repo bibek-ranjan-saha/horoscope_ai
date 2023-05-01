@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:horoscope_ai/presentation/screens/horoscope_screen.dart';
 import 'package:horoscope_ai/presentation/screens/period_selector_screen.dart';
 import 'package:horoscope_ai/presentation/screens/sign_selection_screen.dart';
-import 'package:horoscope_ai/presentation/screens/start_screen.dart';
+import 'package:horoscope_ai/presentation/screens/splash_screen.dart';
 import 'package:horoscope_ai/presentation/screens/type_selector_screen.dart';
+
+import '../../presentation/screens/start_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(routes: <RouteBase>[
@@ -12,7 +14,14 @@ class AppRouter {
       name: "/",
       path: "/",
       builder: (BuildContext context, GoRouterState state) {
-        return const StartScreen();
+        return const SplashScreen();
+      },
+    ),
+    GoRoute(
+      name: StartScreen.routeName,
+      path: StartScreen.routeName,
+      builder: (BuildContext context, GoRouterState state) {
+        return StartScreen();
       },
     ),
     GoRoute(

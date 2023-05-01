@@ -1,3 +1,6 @@
 {
-  "start" : "start"
+  "start" : "start",
+  "network_time_out" : "network timed out Please check your internet connection",
+  "something_went_wrong" : "something went wrong please try again latter",
+  "wrong_with_server" : "there is a issue from server please hold on while we work on fix"
 }

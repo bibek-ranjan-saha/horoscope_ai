@@ -1,3 +1,6 @@
 {
-  "start" : "शुरू"
+  "start" : "शुरू",
+  "network_time_out" : "",
+  "something_went_wrong" : "",
+  "wrong_with_server" : ""
 }
