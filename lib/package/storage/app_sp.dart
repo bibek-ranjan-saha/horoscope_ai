@@ -41,23 +41,27 @@ class AppSharedPref {
   static Future<bool> setValue(String key, dynamic value,
       {bool replacePrevList = false}) async {
     bool output = true;
-    if (value is bool) {
-      _prefs!.setBool(key, value);
-    } else if (value is String) {
-      _prefs!.setString(key, value);
-    } else if (value is int) {
-      _prefs!.setInt(key, value);
-    } else if (value is double) {
-      _prefs!.setDouble(key, value);
-    } else if (value is List<String>) {
-      List<String> finalList = [];
-      if (replacePrevList) {
-        finalList = value;
-      } else {
-        final prevList = await getStrListValue(key) ?? [];
-        finalList.addAll(value..addAll(prevList));
+    try {
+      if (value is bool) {
+        _prefs!.setBool(key, value);
+      } else if (value is String) {
+        _prefs!.setString(key, value);
+      } else if (value is int) {
+        _prefs!.setInt(key, value);
+      } else if (value is double) {
+        _prefs!.setDouble(key, value);
+      } else if (value is List<String>) {
+        List<String> finalList = [];
+        if (replacePrevList) {
+          finalList = value;
+        } else {
+          final prevList = await getStrListValue(key) ?? [];
+          finalList.addAll(value..addAll(prevList));
+        }
+        _prefs!.setStringList(key, finalList);
       }
-      _prefs!.setStringList(key, finalList);
+    } catch (e) {
+      output = false;
     }
     return output;
   }

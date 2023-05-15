@@ -1,6 +1,11 @@
 {
   "start" : "शुरू",
-  "network_time_out" : "",
-  "something_went_wrong" : "",
-  "wrong_with_server" : ""
+  "network_time_out" : "नेटवर्क का समय समाप्त कृपया अपने इंटरनेट कनेक्शन की जाँच करें",
+  "something_went_wrong" : "कुछ गलत हुआ कृपया बाद में पुन: प्रयास करें",
+  "wrong_with_server" : "सर्वर से कोई समस्या है, कृपया इसे ठीक करने के लिए काम करते समय रुकें",
+  "welcome" : "स्वागत",
+  "select_user" : "उपयोगकर्ता का चयन करें",
+  "name_must_be_5_char_error" : "नाम कम-से-कम 5 वर्ण लंबा होना चाहिए",
+  "name_required_error" : "यह एक अपेक्षित क्षेत्र है",
+  "are_you" : "क्या आप %s हैं"
 }

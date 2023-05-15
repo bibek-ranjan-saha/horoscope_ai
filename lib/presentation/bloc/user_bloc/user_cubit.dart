@@ -1,6 +1,4 @@
 // ignore_for_file: depend_on_referenced_packages
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:horoscope_ai/package/storage/app_sp.dart';
@@ -19,7 +17,6 @@ class UserCubit extends Cubit<UserState> {
         await AppSharedPref.getStrListValue(StorageKeys.kUsers) ?? [];
     String? selectedUser =
         await AppSharedPref.getStringValue(StorageKeys.kSelectedUser);
-    log("getUsers $usersName");
     emit(UserSuccessState(
         isNew: usersName.isEmpty,
         users: usersName,
@@ -27,9 +24,14 @@ class UserCubit extends Cubit<UserState> {
   }
 
   void setUser(String user) async {
-    log("set User $user");
-    await AppSharedPref.setValue(StorageKeys.kUsers, [user])
-        .whenComplete(() => emit(UserSelectedState()));
+    var currentState = state;
+    if (currentState is UserSuccessState) {
+      if (currentState.users.contains(user)) {
+        selectUser(user);
+      }
+      await AppSharedPref.setValue(StorageKeys.kUsers, [user])
+          .whenComplete(() => emit(UserSelectedState()));
+    }
   }
 
   void selectUser(String user) async {

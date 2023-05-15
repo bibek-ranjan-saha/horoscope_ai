@@ -1,19 +1,20 @@
-import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:horoscope_ai/config/strings.dart';
+import 'package:horoscope_ai/package/localization/app_localization.dart';
 import 'package:horoscope_ai/presentation/bloc/user_bloc/user_cubit.dart';
 import 'package:horoscope_ai/presentation/screens/sign_selection_screen.dart';
+import 'package:sprintf/sprintf.dart';
 
 class StartScreen extends StatelessWidget {
   static const String routeName = "/start_screen";
 
   StartScreen({Key? key}) : super(key: key);
 
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,12 @@ class StartScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppStrings.kWelcome.tr()),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () => AppLocalization.changeLocale(context),
+            icon: const Icon(Icons.language_rounded),
+          )
+        ],
       ),
       body: BlocConsumer<UserCubit, UserState>(
         listener: (context, state) {
@@ -34,48 +41,62 @@ class StartScreen extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (state is UserSuccessState) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if(!state.isNew)
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                        "Are you ${state.lastSelectedUser}!",
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
+            return Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ListView(
+                children: [
+                  if (!state.isNew && state.lastSelectedUser != null)
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        sprintf(
+                            AppStrings.kAreYou.tr(), [state.lastSelectedUser]),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    TextField(
+                    ),
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
                       expands: false,
+                      validator: (txt) {
+                        if (txt == null) {
+                          return AppStrings.kNameRequiredError.tr();
+                        }
+                        if (txt.trim().length <= 5) {
+                          return AppStrings.kNameMustBe5CharError.tr();
+                        }
+                        return null;
+                      },
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),
-                      controller: nameController,
+                      controller: _nameController,
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        context.read<UserCubit>().setUser(_nameController.text);
+                      }
+                    },
+                    icon: const Icon(Icons.start),
+                    label: Text(
+                      AppStrings.kStart.tr(),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        if (nameController.text.trim().isNotEmpty) {
-                          context
-                              .read<UserCubit>()
-                              .setUser(nameController.text);
-                        } else {}
-                      },
-                      icon: const Icon(Icons.start),
-                      label: Text(
-                        AppStrings.kStart.tr(),
-                      ),
-                    ),
-                    if (state.users.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton.icon(
-                          onPressed: () {
+                  ),
+                  if (state.users.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          if (state.users.length == 1) {
+                            context
+                                .read<UserCubit>()
+                                .selectUser(state.users.first);
+                          } else {
                             showModalBottomSheet(
                               context: context,
                               builder: (ctx) {
@@ -109,19 +130,18 @@ class StartScreen extends StatelessWidget {
                                 );
                               },
                             );
-                          },
-                          icon: const Icon(Icons.select_all_rounded),
-                          label: Text(
-                            AppStrings.kSelectUser.tr(),
-                          ),
+                          }
+                        },
+                        icon: const Icon(Icons.select_all_rounded),
+                        label: Text(
+                          AppStrings.kSelectUser.tr(),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             );
           } else {
-            log(state.toString());
             return const SizedBox();
           }
         },
